@@ -1,0 +1,10 @@
+name=test
+id=1
+-
+PUMP ON
+HEAT 64
+WAIT 3s
+HEAT 70
+WAIT 2s
+HEAT OFF
+PUMP OFF

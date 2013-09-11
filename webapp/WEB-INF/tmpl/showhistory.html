@@ -1,0 +1,52 @@
+#parse("header.html")
+<h1>$entry.programName</h1>
+<h2>$date.format('yyyy-MM-dd HH:mm',$entry.date)</h2>
+
+<div id="tjoffe" style="">
+</div>
+	
+<script type="text/javascript">
+	var chartOptions = {
+				chart: {
+					renderTo: 'tjoffe',
+					zoomType: 'xy',
+				},
+				credits: {
+					enabled : false
+				},
+				global:{
+					useUTC: false
+				},
+				title: {
+					text: ''
+				},
+				xAxis: {
+					type: 'datetime',
+					dateTimeLabelFormats: { // don't display the dummy year
+						day: '%d/%m'
+					},
+				},
+				yAxis: {
+					title: {
+						text: ''
+					},
+					min: 0
+				},
+				series: []
+			};
+	#foreach( $type in $entry.dataTypes )
+		chartOptions.series.push({
+			name : '$type',
+			data : $entry.getDataString($type)
+		});
+	#end
+	//chartOptions.yAxis.title.text = 'Some title';
+	chartOptions.title.text = '$entry.programName';
+	var highchartsOptions = Highcharts.setOptions(Highcharts.theme);
+	chart = new Highcharts.Chart(chartOptions);
+
+</script>
+
+<a href="historylist.html">Tillbaka</a> <br/>
+#parse("footer.html")
+

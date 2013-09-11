@@ -1,0 +1,16 @@
+Bild på GPIO layouten enligt wiringPi: http://pi4j.com/images/gpio-control-example.png
+Bild på GPIO layouten enligt raspberry: http://www.hobbytronics.co.uk/image/data/tutorial/raspberry-pi/gpio-pinout-rev2.jpg
+
+Temp:	blank:    6 gnd
+	gul:	  7 gpio 7
+	röd:	  1 3.3v
+	motstånd 4.7k mellan gul och röd.
+
+Relä:	vcc:	  2 5.0v
+	gnd:	  6 gnd
+morse	in1:	  12 gpio 1
+pump  	in2:  	  13 gpio 2
+värme	in3:	  15 gpio 3
+
+Power:	5v	  2
+	GND	  6

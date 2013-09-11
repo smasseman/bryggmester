@@ -1,0 +1,10 @@
+name=Alarm test
+id=6
+-
+WAIT 3s
+ALARM bomb|GO|Alarm text
+WAIT 10s
+ALARM bomb|WAIT|En annan alarm text
+WAIT 5s
+
+

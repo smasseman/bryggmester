@@ -1,0 +1,7 @@
+id=1
+name=Test 3
+-
+PUMP ON
+HEAT 70.0
+WAIT 1m
+PUMP ON

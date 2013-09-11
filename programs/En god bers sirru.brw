@@ -1,0 +1,14 @@
+name=En god bärs
+id=5
+-
+PUMP ON
+HEAT 64
+WAIT 10s
+HEAT 70
+WAIT 10s
+HEAT 75
+ALARM bell|WAIT|Ta en paus-öl.
+HEAT 90
+WAIT 60m
+HEAT OFF
+PUMP OFF
