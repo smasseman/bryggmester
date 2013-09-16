@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import javax.annotation.Resource;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
@@ -19,8 +21,8 @@ import org.springframework.stereotype.Repository;
 public class Database {
 
 	private Logger logger = LoggerFactory.getLogger(getClass());
-	private File directory = new File(System.getProperty("user.home"),
-			"/bryggmester");
+	@Resource(name = "programdirectory")
+	private File directory;
 	private FileFilter PROGRAM_FILTER = new FileFilter() {
 
 		@Override

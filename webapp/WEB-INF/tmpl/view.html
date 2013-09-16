@@ -67,7 +67,15 @@
 		 #end
 	#end
 	
-<div id="instructions">
+<div id="instructions" class="fulldiv">
+	<fieldset>
+		<legend>Uppskattad tid kvar</legend>
+		<div id="totaltimeleftvaluediv">
+		</div> 
+	</fieldset>
+</div>
+
+<div id="instructions" class="fulldiv">
 	<fieldset>
 		<legend>Instruktioner</legend>
 	
@@ -81,6 +89,7 @@
 	#end
 	</fieldset>
 </div>
+
 
 <script>
 	var lastUpdate = new Date();
@@ -145,6 +154,12 @@
 					$("#desiredtempdiv").html("-");
 				else
 					$("#desiredtempdiv").html(state.desiredtemp);
+				
+				if( data.totalminutesleft == null )
+					$("#totaltimeleftvaluediv").html("-");
+				else
+					$("#totaltimeleftvaluediv").html(data.totalminutesleft + " minuter");
+				
 				secleft = data.secondsleft;
 				$(".instructiondiv").each(function(){
 			    	//$(this).css("background-color","white");

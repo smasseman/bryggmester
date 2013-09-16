@@ -93,4 +93,18 @@ public class Temperature {
 		return new Temperature(new Float(valueString), scale);
 	}
 
+	public Temperature add(int i) {
+		return new Temperature(value + i, scale);
+	}
+
+	public static Temperature createCelcius(int i) {
+		return new Temperature(i, Scale.CELCIUS);
+	}
+
+	public float getCelciusValue() {
+		if (scale != Scale.CELCIUS)
+			throw new UnsupportedOperationException(scale
+					+ " is not supported.");
+		return value;
+	}
 }

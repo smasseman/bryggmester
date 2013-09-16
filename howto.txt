@@ -9,8 +9,8 @@ Temp:	blank:    6 gnd
 Relä:	vcc:	  2 5.0v
 	gnd:	  6 gnd
 morse	in1:	  12 gpio 1
-pump  	in2:  	  13 gpio 2
-värme	in3:	  15 gpio 3
+pump  	in3:  	  15 gpio 3 
+värme	in4:	  16 gpio 4 
 
 Power:	5v	  2
 	GND	  6

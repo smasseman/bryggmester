@@ -14,24 +14,29 @@
 				credits: {
 					enabled : false
 				},
-				global:{
-					useUTC: false
+				global: {
+					useUTC: false,
 				},
 				title: {
 					text: ''
 				},
 				xAxis: {
-					type: 'datetime',
-					dateTimeLabelFormats: { // don't display the dummy year
-						day: '%d/%m'
-					},
+					type: 'datetime'
 				},
 				yAxis: {
 					title: {
 						text: ''
 					},
-					min: 0
+					min: 0,
+					max: 101
 				},
+		        plotOptions: {
+		            series: {
+		                marker: {
+		                    enabled: false
+		                }
+		            }
+		        },
 				series: []
 			};
 	#foreach( $type in $entry.dataTypes )
@@ -40,7 +45,6 @@
 			data : $entry.getDataString($type)
 		});
 	#end
-	//chartOptions.yAxis.title.text = 'Some title';
 	chartOptions.title.text = '$entry.programName';
 	var highchartsOptions = Highcharts.setOptions(Highcharts.theme);
 	chart = new Highcharts.Chart(chartOptions);

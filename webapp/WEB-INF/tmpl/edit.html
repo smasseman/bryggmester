@@ -8,7 +8,7 @@
 		<input type="submit" value="Spara"/>
 	</form>
 </fieldset>
-
+Uppskattat programtid: $timeleft minuter
 <fieldset>
 	<legend>Instruktioner</legend>
 		<table>
@@ -85,8 +85,13 @@
 <fieldset>
 	<legend>Lägg till pump instruktion.</legend>
 	<form action="addpump.html">
-		&nbsp;<input type="radio" name="value" checked="checked" value="OFF">&nbsp;Av<br/>
-		&nbsp;<input type="radio" name="value" value="ON">&nbsp;På<br/>
+		<select name="value">
+			<option value="OFF">Av</option>
+			<option value="ON">På, hela tiden.</option>
+			<option value="ON|5m|30s">På (5min/30sek)</option>)
+			<option value="ON|10m|30s">På (10min/30sek)</option>)
+			<option value="ON|10s|5s">På För testning (10s/5s)</option>)
+		</select>
 		<input type="hidden" name="id" value="$prog.id"/>
 		<input type="submit" value="Lägg till"/>
 	</form>

@@ -50,4 +50,12 @@ public class Pump {
 	public PumpState getCurrentState() {
 		return currentState;
 	}
+
+	public GpioPinDigitalOutput getPin() {
+		return pin;
+	}
+
+	public void setPin(GpioPinDigitalOutput pin) {
+		this.pin = pin;
+	}
 }

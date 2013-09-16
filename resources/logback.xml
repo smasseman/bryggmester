@@ -9,8 +9,7 @@
 			</fileNamePattern>
 		</rollingPolicy>
 		<encoder>
-			<pattern>%d{HH:mm:ss} %5level [%40.40logger{40}] %msg %ex %n
-			</pattern>
+			<pattern>%d{HH:mm:ss} %5level [%40.40logger{40}] %msg %ex %n</pattern>
 		</encoder>
 	</appender>
 
@@ -18,8 +17,6 @@
 		<appender-ref ref="FILE" />
 	</root>
 
-	<logger name="se.bryggmester" level="trace" />
-	<logger name="se.bryggmester.MorseCodePlayer" level="trace" />
-	<logger name="se.bryggmester.PiHardware" level="trace" />
+	<logger name="se.bryggmester" level="debug"/>
 
 </configuration>

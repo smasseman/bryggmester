@@ -1,12 +1,14 @@
 package se.bryggmester;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.TimeZone;
 
 import se.bryggmester.HistoryData.Type;
+import se.bryggmester.util.TimeUnit;
 
 /**
  * @author jorgen.smas@entercash.com
@@ -43,43 +45,72 @@ public class HistoryEntry {
 	}
 
 	public Collection<Type> getDataTypes() {
-		HashSet<Type> types = new HashSet<>();
-		for (HistoryData d : data) {
-			types.add(d.getType());
-		}
-		return types;
+		return Arrays.asList(Type.values());
 	}
 
 	public String getDataString(Type type) {
 		StringBuilder s = new StringBuilder();
+		String lastValue = null;
 		s.append("[");
 		for (HistoryData d : data) {
 			if (d.getType() == type) {
+				Date ts = d.getDate();
 				if (s.length() > 1)
 					s.append(",");
 				s.append("[");
-				s.append(d.getDate().getTime());
+				appendTime(s, ts);
 				s.append(",");
-				if (d.getType() == Type.PUMP) {
-					if (PumpState.valueOf(d.getValue()) == PumpState.ON) {
-						s.append("10");
-					} else {
-						s.append("0");
-					}
-				} else if (d.getType() == Type.HEAT) {
-					if (HeatState.valueOf(d.getValue()) == HeatState.ON) {
-						s.append("20");
-					} else {
-						s.append("0");
-					}
-				} else {
-					s.append(d.getValue());
-				}
+				lastValue = appendValue(s, d);
 				s.append("]");
 			}
 		}
+		if ((type == Type.HEAT || type == Type.PUMP || type == Type.WANTED)
+				&& lastValue != null) {
+			s.append(",");
+			s.append("[");
+			appendTime(s, maxTimeStamp());
+			s.append(",");
+			s.append(lastValue);
+			s.append("]");
+		}
 		s.append("]");
 		return s.toString();
+	}
+
+	private void appendTime(StringBuilder s, Date d) {
+		long time;
+		if (TimeZone.getTimeZone("CET").inDaylightTime(d)) {
+			time = d.getTime() + TimeUnit.HOUR.asMillis(2);
+		} else {
+			time = d.getTime() + TimeUnit.HOUR.asMillis(1);
+		}
+		s.append(time);
+	}
+
+	private Date maxTimeStamp() {
+		HistoryData lastData = data.get(data.size() - 1);
+		return lastData.getDate();
+	}
+
+	private String appendValue(StringBuilder s, HistoryData d) {
+		String value;
+		if (d.getType() == Type.PUMP) {
+			if (PumpState.valueOf(d.getValue()) == PumpState.ON) {
+				value = "10";
+			} else {
+				value = "0";
+			}
+		} else if (d.getType() == Type.HEAT) {
+			if (HeatState.valueOf(d.getValue()) == HeatState.ON) {
+				value = "20";
+			} else {
+				value = "0";
+			}
+		} else {
+			value = String.valueOf(d.getValue());
+		}
+		s.append(value);
+		return value;
 	}
 
 	public Long getId() {

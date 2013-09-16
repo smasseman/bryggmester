@@ -8,6 +8,9 @@
 			<td>
 				<a href="showhistory.html?id=${e.id}">$e.programName</a>
 			</td>
+			<td>
+				<a href="deletehistory.html?id=${e.id}" onclick="javascript: return confirm('Är du säker på att du vill ta bort?')">Ta bort</a>
+			</td>
 		</tr>
 	#end
 </table>

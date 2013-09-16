@@ -28,6 +28,7 @@ public class HeatController implements Listener {
 	private Temperature wantedTemp;
 	private Temperature currentTemp;
 	private List<Listener> listeners = new LinkedList<>();
+	private Object waitLock = new Object();
 
 	public void addListener(Listener l) {
 		listeners.add(l);
@@ -42,6 +43,10 @@ public class HeatController implements Listener {
 	public void notifyTemperatureChanged(Temperature temp) {
 		currentTemp = temp;
 		updateState();
+		synchronized (waitLock) {
+			waitLock.notifyAll();
+		}
+		;
 	}
 
 	private void updateState() {
@@ -72,5 +77,20 @@ public class HeatController implements Listener {
 		for (Listener l : listeners) {
 			l.notifyWantedTempChanged(t);
 		}
+	}
+
+	public void waitForTemperature(Temperature temperature)
+			throws InterruptedException {
+		synchronized (waitLock) {
+			while (currentTemp == null
+					|| tempDiff(temperature, currentTemp) > 1) {
+				waitLock.wait();
+			}
+		}
+	}
+
+	private float tempDiff(Temperature t1, Temperature t2) {
+		float abs = Math.abs(t1.getValue() - t2.getValue());
+		return abs;
 	}
 }

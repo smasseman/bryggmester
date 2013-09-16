@@ -65,6 +65,9 @@
 		<bean id="logdirectory" class="java.io.File">
 			<constructor-arg value="/Users/jorgen/git/bryggmester/logdir" />
 		</bean>
+		<bean id="programdirectory" class="java.io.File">
+			<constructor-arg value="/Users/jorgen/git/bryggmester/programs" />
+		</bean>
 	</beans>
 
 	<beans profile="pi">
@@ -75,7 +78,10 @@
 			<constructor-arg value="false" />
 		</bean>
 		<bean id="logdirectory" class="java.io.File">
-			<constructor-arg value="/tmp" />
+			<constructor-arg value="/var/bryggmester/history" />
+		</bean>
+		<bean id="programdirectory" class="java.io.File">
+			<constructor-arg value="/var/bryggmester/programs" />
 		</bean>
 	</beans>
 

@@ -35,11 +35,12 @@ import se.bryggmester.PumpState;
 import se.bryggmester.Temperature;
 import se.bryggmester.Temperature.Scale;
 import se.bryggmester.TemperatureSensor;
+import se.bryggmester.TimeLeftCalculator;
 import se.bryggmester.instruction.AlarmInstruction;
 import se.bryggmester.instruction.AlarmInstruction.Type;
 import se.bryggmester.instruction.HeatInstruction;
 import se.bryggmester.instruction.Instruction;
-import se.bryggmester.instruction.PumpInstruction;
+import se.bryggmester.instruction.InstructionType;
 import se.bryggmester.instruction.WaitInstruction;
 import se.bryggmester.util.TimeUnit;
 
@@ -128,6 +129,15 @@ public class BryggMesterController implements Listener,
 		model.addAttribute("entries", entries);
 	}
 
+	@RequestMapping("/deletehistory.html")
+	public String deleteHistory(Model model, @RequestParam Long id)
+			throws IOException {
+		historyLogger.getDelete(id);
+		List<HistoryEntry> entries = historyLogger.getHistoryEntries();
+		model.addAttribute("entries", entries);
+		return "historylist";
+	}
+
 	@RequestMapping("/showhistory.html")
 	public void showHistory(Model model, @RequestParam Long id)
 			throws IOException {
@@ -147,6 +157,10 @@ public class BryggMesterController implements Listener,
 			@RequestParam(required = false) String name) throws IOException {
 		Program p;
 		if (id == null) {
+			if ("".equals(name)) {
+				addError(model, "Du måste ange ett namn på ditt program.");
+				return "index";
+			}
 			p = new Program();
 			database.add(p);
 		} else {
@@ -189,6 +203,12 @@ public class BryggMesterController implements Listener,
 	public void program(Model model, @RequestParam Long id) throws IOException {
 		Program p = database.getProgramById(id);
 		model.addAttribute("prog", p);
+		model.addAttribute(
+				"timeleft",
+				new TimeLeftCalculator().calculateTimeLeft(p.getInstructions(),
+						Temperature.createCelcius(15))
+						/ TimeUnit.MINUTE.asMillis(1));
+
 		addAvailableAlarmNamesToModel(model);
 	}
 
@@ -196,7 +216,7 @@ public class BryggMesterController implements Listener,
 	public String addPump(Model model, @RequestParam Long id,
 			@RequestParam String value) throws IOException {
 		Program p = database.getProgramById(id);
-		Instruction i = new PumpInstruction(PumpState.valueOf(value));
+		Instruction i = InstructionType.PUMP.parse(value);
 		return addInstruction(model, p, i);
 	}
 
@@ -224,7 +244,10 @@ public class BryggMesterController implements Listener,
 		Program p = database.getProgramById(id);
 		long t;
 		try {
-			t = new Long(value) * 1000 * 60;
+			if (value.endsWith("s"))
+				t = new Long(value.substring(0, value.length() - 1)) * 1000;
+			else
+				t = new Long(value) * 1000 * 60;
 		} catch (Exception e) {
 			logger.debug(e.toString());
 			addError(model, "Felaktigt värde på minuterna.");
@@ -263,7 +286,6 @@ public class BryggMesterController implements Listener,
 	}
 
 	private String showProgram(Model model, Program p) {
-		model.addAttribute("prog", p);
 		return "redirect:edit.html?id=" + p.getId();
 	}
 
@@ -361,6 +383,10 @@ public class BryggMesterController implements Listener,
 			state.addProperty("running", programExecutor.isRunning());
 			json.add("state", state);
 
+			Long totalTimeLeft = programExecutor.getTotalTimeLeft();
+			if (totalTimeLeft != null)
+				addProperty(json, "totalminutesleft", totalTimeLeft
+						/ (TimeUnit.MINUTE.asMillis(1)));
 			Long timeLeftToWait = programExecutor.getTimeLeftToWait();
 			if (timeLeftToWait != null)
 				addProperty(json, "secondsleft", timeLeftToWait / 1000);

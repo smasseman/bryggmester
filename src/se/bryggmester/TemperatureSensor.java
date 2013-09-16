@@ -41,6 +41,8 @@ public class TemperatureSensor {
 
 	public void addListener(Listener l) {
 		listeners.add(l);
+		if (currentTemp != null)
+			l.notifyTemperatureChanged(currentTemp);
 	}
 
 	@PostConstruct
@@ -98,7 +100,7 @@ public class TemperatureSensor {
 		}
 	}
 
-	private void setCurrentTemp(Temperature temp) {
+	protected void setCurrentTemp(Temperature temp) {
 		if (!temp.equals(currentTemp)) {
 			currentTemp = temp;
 			logger.info("Temp " + temp.toString());

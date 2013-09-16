@@ -1,6 +1,0 @@
-name=pump
-id=2
--
-PUMP ON
-WAIT 3s
-PUMP OFF

@@ -28,6 +28,7 @@ public class ProgramExecutor {
 		void notifyProgramChanged(Integer i);
 	}
 
+	private TimeLeftCalculator timeLeftCalculator = new TimeLeftCalculator();
 	private Logger logger = LoggerFactory.getLogger(getClass());
 	private int instrPointer = -1;
 	private Program program;
@@ -35,11 +36,13 @@ public class ProgramExecutor {
 	private List<Listener> listeners = new LinkedList<>();
 	private AtomicInteger currentAlarm = new AtomicInteger(-1);
 	@Resource
-	private Pump pump;
+	private PumpController pumpController;
 	@Resource
 	private HeatController heatController;
 	private Long waitUntil;
 	private Object waitLock = new Object();
+	@Resource
+	private TemperatureSensor tempSensor;
 
 	public void addListener(Listener l) {
 		listeners.add(l);
@@ -75,7 +78,10 @@ public class ProgramExecutor {
 	}
 
 	private void programTerminated() {
-		pump.setState(PumpState.OFF);
+		try {
+			pumpController.stop();
+		} catch (InterruptedException ignore) {
+		}
 		heatController.setWantedTemp(null);
 		instrPointer = -1;
 		notifyInstructionPointerChanged(instrPointer);
@@ -107,8 +113,7 @@ public class ProgramExecutor {
 
 	private void executeInstruction(Instruction i) throws InterruptedException {
 		if (i.getType() == InstructionType.PUMP) {
-			PumpInstruction p = (PumpInstruction) i;
-			pump.setState(p.getState());
+			executePumpInstruction((PumpInstruction) i);
 
 		} else if (i.getType() == InstructionType.WAIT) {
 			WaitInstruction w = (WaitInstruction) i;
@@ -120,11 +125,24 @@ public class ProgramExecutor {
 
 		} else if (i.getType() == InstructionType.HEAT) {
 			HeatInstruction h = (HeatInstruction) i;
-			heatController.setWantedTemp(h.getTemperature());
+			executeHeatInstruction(h);
 
 		} else {
 			throw new RuntimeException("Illegal instruction " + i);
 		}
+	}
+
+	private void executeHeatInstruction(HeatInstruction h)
+			throws InterruptedException {
+		heatController.setWantedTemp(h.getTemperature());
+		if (h.getTemperature() != null) {
+			heatController.waitForTemperature(h.getTemperature());
+		}
+	}
+
+	private void executePumpInstruction(PumpInstruction i)
+			throws InterruptedException {
+		pumpController.execute(i);
 	}
 
 	private void notifyInstructionPointerChanged(Integer i) {
@@ -191,6 +209,25 @@ public class ProgramExecutor {
 			if (waitUntil == null)
 				return null;
 			return Math.max(0, this.waitUntil - System.currentTimeMillis());
+		}
+	}
+
+	public Long getTotalTimeLeft() {
+		synchronized (waitLock) {
+			if (getCurrentRunningProgram() == null)
+				return null;
+			List<Instruction> instructions = this.program.getInstructions()
+					.subList(this.instrPointer,
+							this.program.getInstructions().size());
+			long time = timeLeftCalculator.calculateTimeLeft(instructions,
+					tempSensor.getCurrentTemperature());
+			if (instructions.size() > 0
+					&& instructions.get(0) instanceof WaitInstruction) {
+				WaitInstruction w = (WaitInstruction) (instructions.get(0));
+				time -= w.getMillis();
+				time += getTimeLeftToWait();
+			}
+			return time;
 		}
 	}
 }

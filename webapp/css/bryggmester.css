@@ -55,6 +55,7 @@ a {
 fieldset {
 	border-radius: 10px;
 }
+
 #programname {
 	font-size: 2em;
 }
@@ -71,7 +72,12 @@ fieldset {
 	padding-left: 20px;	
 }
 
-#instructions {
+#totaltimeleftdiv {
+	width: 440px;
+	
+}
+
+.fulldiv {
 	padding-top: 20px;
 	padding-bottom: 20px;
 	width: 440px;

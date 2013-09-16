@@ -8,6 +8,8 @@ import java.util.regex.Pattern;
  */
 public enum TimeUnit {
 
+	HOUR(1000L * 60L * 60L, "h"),
+
 	MINUTE(1000L * 60L, "m"),
 
 	SECOND(1000L, "s"),
@@ -29,7 +31,8 @@ public enum TimeUnit {
 	public static long parse(String string) {
 		Pattern p = Pattern.compile("[0-9]+([a-z]+)");
 		Matcher m = p.matcher(string);
-		m.matches();
+		if (!m.matches())
+			throw new IllegalArgumentException(string + " can not be parsed.");
 		String units = m.group(1);
 		for (TimeUnit u : values()) {
 			if (units.equals(u.unitChars)) {
@@ -42,8 +45,10 @@ public enum TimeUnit {
 	}
 
 	public static String format(long m) {
-		if (m < 1)
+		if (m < 0)
 			return String.valueOf(m);
+		if (m == 0)
+			return "0ms";
 		StringBuilder s = new StringBuilder();
 		for (TimeUnit u : values()) {
 			if (m >= u.millis) {

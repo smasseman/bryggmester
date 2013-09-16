@@ -12,5 +12,6 @@
 	</root>
 
 	<logger name="se.bryggmester" level="debug" />
+	<logger name="se.bryggmester.PumpController" level="trace" />
 
 </configuration>

@@ -1,7 +1,0 @@
-name=Värme
-id=3
--
-WAIT 3s
-HEAT 70
-WAIT 3s
-

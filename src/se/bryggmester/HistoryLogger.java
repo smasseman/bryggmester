@@ -165,7 +165,7 @@ public class HistoryLogger implements
 	public List<HistoryEntry> getHistoryEntries() {
 		File[] files = getAllHistoryFiles();
 		List<HistoryEntry> result = parseFiles(files);
-		sortById(result);
+		sortByDate(result);
 		return result;
 	}
 
@@ -192,14 +192,12 @@ public class HistoryLogger implements
 		return files;
 	}
 
-	private void sortById(List<HistoryEntry> result) {
+	private void sortByDate(List<HistoryEntry> result) {
 		Comparator<HistoryEntry> comp = new Comparator<HistoryEntry>() {
 
 			@Override
 			public int compare(HistoryEntry o1, HistoryEntry o2) {
-				Long id1 = o1.getId();
-				Long id2 = o2.getId();
-				return id1.compareTo(id2);
+				return o2.getDate().compareTo(o1.getDate());
 			}
 		};
 		Collections.sort(result, comp);
@@ -207,8 +205,7 @@ public class HistoryLogger implements
 
 	private HistoryEntry parse(File f) throws IOException, ParseException {
 		HistoryEntry e = new HistoryEntry();
-		e.setId(new Long(f.getName().substring(0,
-				f.getName().length() - SUFFIX.length())));
+		e.setId(getEntryIdFromFile(f));
 		BufferedReader reader = new BufferedReader(new FileReader(f));
 		try {
 			String line;
@@ -232,6 +229,16 @@ public class HistoryLogger implements
 			close(reader);
 		}
 		return e;
+	}
+
+	private File getFilenameFromEntryId(Long id) {
+		String filename = id + SUFFIX;
+		return new File(directory, filename);
+	}
+
+	private Long getEntryIdFromFile(File f) {
+		return new Long(f.getName().substring(0,
+				f.getName().length() - SUFFIX.length()));
 	}
 
 	private String getValue(String line) {
@@ -302,4 +309,14 @@ public class HistoryLogger implements
 		}
 		return null;
 	}
+
+	public void getDelete(Long id) {
+		HistoryEntry e = getEntryById(id);
+		if (e == null)
+			return;
+		File file = getFilenameFromEntryId(e.getId());
+		file.delete();
+
+	}
+
 }
